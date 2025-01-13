@@ -18,6 +18,7 @@ import torchvision.models.resnet as resnet
 import torch
 
 from task2vec import ProbeNetwork
+from torch.nn import Flatten
 
 _MODELS = {}
 
@@ -36,7 +37,7 @@ class ResNet(resnet.ResNet, ProbeNetwork):
             self.conv1, self.bn1, self.relu,
             self.maxpool, self.layer1, self.layer2,
             self.layer3, self.layer4, self.avgpool,
-            lambda z: torch.flatten(z, 1), self.fc
+            Flatten(1), self.fc
         ]
 
     @property

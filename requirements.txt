@@ -8,5 +8,5 @@ torchvision
 numpy
 pandas
 hydra-core
-sklearn
+scikit-learn
 tqdm

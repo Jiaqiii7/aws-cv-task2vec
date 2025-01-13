@@ -232,13 +232,18 @@ class Task2Vec:
         logging.info("Caching features...")
         if loader_opts is None:
             loader_opts = {}
+
+        for layer in self.model.layers:
+            if hasattr(layer, 'input_features'):
+                delattr(layer, 'input_features')
+
         data_loader = DataLoader(dataset, shuffle=False, batch_size=loader_opts.get('batch_size', 64),
                                  num_workers=loader_opts.get('num_workers', 6), drop_last=False)
 
         device = next(self.model.parameters()).device
 
         def _hook(layer, inputs):
-            if not hasattr(layer, 'input_features'):
+            if not hasattr(layer, 'input_features') or not isinstance(layer.input_features, list):
                 layer.input_features = []
             layer.input_features.append(inputs[0].data.cpu().clone())
 
