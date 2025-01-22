@@ -199,7 +199,7 @@ def cdist(from_embeddings, to_embeddings, distance='cosine'):
     return distance_matrix
 
 
-def plot_distance_matrix(embeddings, labels=None, distance='cosine'):
+def plot_distance_matrix(embeddings, labels=None, distance='cosine',save_path="/home/hungry_gould/projet/2024-m2cns-rd-cl4healthDisposals/src/results/task2vec_distance_matrix.jpg"):
     import seaborn as sns
     from scipy.cluster.hierarchy import linkage
     from scipy.spatial.distance import squareform
@@ -207,15 +207,19 @@ def plot_distance_matrix(embeddings, labels=None, distance='cosine'):
     import matplotlib.pyplot as plt
     distance_matrix = pdist(embeddings, distance=distance)
     cond_distance_matrix = squareform(distance_matrix, checks=False)
+
     print(f"Conditional Distance Matrix: {cond_distance_matrix}")
     linkage_matrix = linkage(cond_distance_matrix, method='complete', optimal_ordering=True)
     if labels is not None:
         distance_matrix = pd.DataFrame(distance_matrix, index=labels, columns=labels)
     sns.clustermap(distance_matrix, row_linkage=linkage_matrix, col_linkage=linkage_matrix, cmap='viridis_r')
+    if save_path:
+        plt.savefig(save_path, dpi=300, bbox_inches='tight')
     plt.show()
 
 
-def plot_similarity_matrix(embeddings, labels=None, distance='cosine'):
+def plot_similarity_matrix(embeddings, labels=None, distance='cosine', save_path="/home/hungry_gould/projet/2024-m2cns-rd-cl4healthDisposals/src/results/task2vec_similarity_matrix.jpg",
+                           scipy=None):
     import seaborn as sns
     from scipy.cluster.hierarchy import linkage
     from scipy.spatial.distance import squareform
@@ -227,32 +231,34 @@ def plot_similarity_matrix(embeddings, labels=None, distance='cosine'):
     distance_matrix = pdist(embeddings, distance=distance)
     cond_distance_matrix = squareform(distance_matrix, checks=False)
     print(f"Conditional Distance Matrix: {cond_distance_matrix}")
-
+    print(f"Conditional Distance Matrix: {cond_distance_matrix.shape}")
     # Step 2: 将距离矩阵转换为相似度矩阵
     # 方法 1: 使用反比例公式
     similarity_matrix = 1.0 - distance_matrix / np.max(distance_matrix)
+
     # 方法 2: 使用高斯核
     # gamma = 0.5
     # similarity_matrix = np.exp(-gamma * cond_distance_matrix ** 2)
+
     print(f"Similarity Matrix: {similarity_matrix}")
     print(f"Similarity Matrix: {similarity_matrix.shape}")
 
     # Step 3: 层次聚类
     linkage_matrix = linkage(cond_distance_matrix, method='complete', optimal_ordering=True)
-
     # Step 4: 生成相似度 DataFrame
     if labels is not None:
         similarity_df = pd.DataFrame(similarity_matrix, index=labels, columns=labels)
     else:
         similarity_df = pd.DataFrame(similarity_matrix)
-
     # Step 5: 使用 Seaborn 的 clustermap 可视化
     sns.clustermap(
         similarity_df,
         row_linkage=linkage_matrix,
         col_linkage=linkage_matrix,
-        cmap='viridis',
-        figsize=(10, 8)
+        cmap='viridis',  # 可根据需要选择其他配色方案
+        # figsize=(10, 8)
     )
-    plt.title("Similarity Matrix with Hierarchical Clustering")
+    # plt.title("Similarity Matrix with Hierarchical Clustering")
+    if save_path:
+        plt.savefig(save_path, dpi=300, bbox_inches='tight')
     plt.show()

@@ -17,7 +17,7 @@ import torch.utils.model_zoo as model_zoo
 import torchvision.models.resnet as resnet
 import torch
 
-from task2vec import ProbeNetwork
+from task2vec.aws_cv_task2vec.task2vec import ProbeNetwork
 from torch.nn import Flatten
 
 _MODELS = {}
